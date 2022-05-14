@@ -1,0 +1,5 @@
+{
+  "entrypoint": "me.hsgamer.minestomskinsrestorer.MinestomSkinsRestorer",
+  "name": "MinestomSkinsRestorer",
+  "version": "${project.version}"
+}
