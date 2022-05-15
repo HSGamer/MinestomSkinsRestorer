@@ -22,6 +22,7 @@ public class MinestomSkinsRestorer extends Extension {
             try (DataInputStream in = new DataInputStream(new ByteArrayInputStream(event.getMessage()))) {
                 String subChannel = in.readUTF();
                 if (subChannel.equalsIgnoreCase("SkinUpdate")) {
+                    // noinspection unused
                     String name = in.readUTF();
                     String value = in.readUTF();
                     String signature = in.readUTF();
