@@ -6,6 +6,8 @@ import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.event.player.PlayerPluginMessageEvent;
 import net.minestom.server.extensions.Extension;
+import net.minestom.server.extras.bungee.BungeeCordProxy;
+import net.minestom.server.extras.velocity.VelocityProxy;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
@@ -16,22 +18,24 @@ public class MinestomSkinsRestorer extends Extension {
 
     @Override
     public void initialize() {
-        node.addListener(PlayerPluginMessageEvent.class, event -> {
-            String channel = event.getIdentifier();
-            if (!channel.equals("sr:skinchange")) return;
-            try (DataInputStream in = new DataInputStream(new ByteArrayInputStream(event.getMessage()))) {
-                String subChannel = in.readUTF();
-                if (subChannel.equalsIgnoreCase("SkinUpdate")) {
-                    // noinspection unused
-                    String name = in.readUTF();
-                    String value = in.readUTF();
-                    String signature = in.readUTF();
-                    event.getPlayer().setSkin(new PlayerSkin(value, signature));
+        if (BungeeCordProxy.isEnabled() || VelocityProxy.isEnabled()) {
+            node.addListener(PlayerPluginMessageEvent.class, event -> {
+                String channel = event.getIdentifier();
+                if (!channel.equals("sr:skinchange")) return;
+                try (DataInputStream in = new DataInputStream(new ByteArrayInputStream(event.getMessage()))) {
+                    String subChannel = in.readUTF();
+                    if (subChannel.equalsIgnoreCase("SkinUpdate")) {
+                        // noinspection unused
+                        String name = in.readUTF();
+                        String value = in.readUTF();
+                        String signature = in.readUTF();
+                        event.getPlayer().setSkin(new PlayerSkin(value, signature));
+                    }
+                } catch (IOException e) {
+                    getLogger().warn("Error while reading skin change packet", e);
                 }
-            } catch (IOException e) {
-                getLogger().warn("Error while reading skin change packet", e);
-            }
-        });
+            });
+        }
         MinecraftServer.getGlobalEventHandler().addChild(node);
     }
 
